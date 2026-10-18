@@ -17,6 +17,7 @@ struct ContentView: View {
     
     @FocusState var leftTyping
     @FocusState var rightTyping
+    @FocusState var showKeyBoard
     
     @State var leftCurrency = Currency.silverPiece
     @State var rightCurrency = Currency.goldPiece
@@ -74,6 +75,7 @@ struct ContentView: View {
                         TextField("Amount", text: $leftAmount)
                             .textFieldStyle(.roundedBorder)
                             .focused($leftTyping)
+                            .focused($showKeyBoard)
                     }
                     
                     // Equal sign
@@ -109,6 +111,7 @@ struct ContentView: View {
                             .textFieldStyle(.roundedBorder)
                             .multilineTextAlignment(.trailing)
                             .focused($rightTyping)
+                            .focused($showKeyBoard)
                     }
                     
                 }
@@ -159,7 +162,14 @@ struct ContentView: View {
         .sheet(isPresented: $showSelectCurrency) {
             SelectCurrency(topCurrency: $leftCurrency, bottomCurrency: $rightCurrency)
         }
-        
+        .onTapGesture {
+            showKeyBoard = false
+        }
+        .onChange(of: showKeyBoard) {
+            if !showKeyBoard {
+                UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+            }
+        }
     }
 }
 
